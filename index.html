@@ -5,109 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Мой секретарь</title>
 <style>
-body {
-font-family: Arial, sans-serif;
-background: #f4f6f8;
-margin: 0;
-padding: 24px;
-color: #202938;
-}
-.app {
-max-width: 520px;
-margin: 40px auto;
-background: white;
-padding: 25px;
-border-radius: 18px;
-box-shadow: 0 4px 20px #00000012;
-}
-h1 { margin-top: 0; }
-.entry { display: flex; gap: 8px; }
-input {
-flex: 1;
-min-width: 0;
-padding: 13px;
-border: 1px solid #ccc;
-border-radius: 10px;
-font-size: 16px;
-}
-button {
-border: 0;
-border-radius: 10px;
-padding: 12px;
-background: #2563eb;
-color: white;
-cursor: pointer;
-}
-li {
-display: flex;
-align-items: center;
-gap: 10px;
-padding: 12px 0;
-border-bottom: 1px solid #eee;
-}
-@media (max-width: 600px) {
-li {
-flex-wrap: wrap;
-}
-
-li span {
-flex: 1 1 100%;
-}
-}
-li span { flex: 1; overflow-wrap: anywhere; }
-li.done span { text-decoration: line-through; color: #888; }
-li.overdue:not(.done) span {
-    color: #dc2626;
-    font-weight: bold;
-}
-li.rescheduled:not(.done) span {
-  color: #d97706;
-  font-weight: bold;
-}
-li button { background: #eee; color: #333; }
-ul { list-style: none; padding: 0; }
-.tabs {
-display: flex;
-gap: 10px;
-margin-top: 20px;
-margin-bottom: 25px;
-}
-.tabs button {
-background: #e5e7eb;
-color: #333;
-}
-
-.tabs button.selected {
-background: #2563eb;
-color: white;
-}
-#taskModal {
-position: fixed;
-inset: 0;
-background: rgba(0, 0, 0, 0.45);
-z-index: 1000;
-display: none;
-align-items: center;
-justify-content: center;
-}
-#taskModal .modal-content {
-background: white;
-padding: 25px;
-border-radius: 16px;
-width: 420px;
-max-width: 90%;
-box-sizing: border-box;
-}
-#taskModal input {
-display: block;
-width: 100%;
-box-sizing: border-box;
-margin-bottom: 12px;
-padding: 12px;
-border: 1px solid #ccc;
-border-radius: 8px;
-font-size: 16px;
-}
+body { font-family: Arial,sans-serif; background:#f4f6f8; margin:0; padding:24px; color:#202938; }
+.app { max-width:520px; margin:40px auto; background:white; padding:25px; border-radius:18px; box-shadow:0 4px 20px #00000012; }
+h1 { margin-top:0; }
+.entry { display:flex; gap:8px; }
+input { flex:1; min-width:0; padding:13px; border:1px solid #ccc; border-radius:10px; font-size:16px; }
+button { border:0; border-radius:10px; padding:12px; background:#2563eb; color:white; cursor:pointer; }
+li { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid #eee; }
+li span { flex:1; min-width:0; overflow-wrap:anywhere; }
+li.done span { text-decoration:line-through; color:#888; }
+li.overdue:not(.done) span { color:#dc2626; font-weight:bold; }
+li.rescheduled:not(.done) span { color:#d97706; font-weight:bold; }
+li button { background:#eee; color:#333; }
+ul { list-style:none; padding:0; }
+.tabs { display:flex; gap:10px; margin-top:20px; margin-bottom:25px; }
+.tabs button { background:#e5e7eb; color:#333; }
+.tabs button.selected { background:#2563eb; color:white; }
+#taskModal { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; display:none; align-items:center; justify-content:center; }
+#taskModal .modal-content { background:white; padding:25px; border-radius:16px; width:420px; max-width:90%; box-sizing:border-box; }
+#taskModal input { display:block; width:100%; box-sizing:border-box; margin-bottom:12px; padding:12px; border:1px solid #ccc; border-radius:8px; font-size:16px; }
+@media(max-width:600px) { body { padding:12px; } .app { margin:14px auto; padding:17px; } li { gap:6px; } li button { font-size:12px; padding:6px; } }
 </style>
 </head>
 <body>
@@ -115,312 +32,271 @@ font-size: 16px;
 <h1>Мой секретарь</h1>
 <p>Что нужно сделать?</p>
 <div id="taskModal">
-<div class="modal-content">  
-<h2>Новая задача</h2>
-<input id="modalTask" placeholder="Что нужно сделать?">
-<input id="modalDate" placeholder="Дата: ДД.ММ.ГГГГ" maxlength="10">
-<input id="modalTime" placeholder="Время: ЧЧ:ММ" maxlength="5">
-<button type="button" onclick="saveModalTask()">Сохранить</button>
-<button type="button" onclick="document.getElementById('taskModal').style.display='none'">Отмена</button>
+ <div class="modal-content">
+  <h2 id="modalHeading">Новая задача</h2>
+  <input id="modalTask" placeholder="Что нужно сделать?">
+  <input id="modalDate" placeholder="Дата: ДД.ММ.ГГГГ" maxlength="10">
+  <input id="modalTime" placeholder="Время: ЧЧ:ММ (необязательно)" maxlength="5">
+  <button type="button" id="saveModalButton">Сохранить</button>
+  <button type="button" id="cancelModalButton">Отмена</button>
+ </div>
 </div>
-</div>
-
 <div class="entry">
-<input id="task" placeholder="Напиши задачу">
-<input id="taskDate" style="display: none;" placeholder="Дата: ДД.ММ.ГГГГ" maxlength="10">
-<input id="taskTime" style="display: none;" placeholder="Время: ЧЧ:ММ" maxlength="5">
-<script>
-function formatInput(id, groups, separator) {
-const input = document.getElementById(id);
-
-input.addEventListener("input", function (event) {
-const isDate = id === "taskDate" || id === "modalDate";
-const maxDigits = isDate ? 8 : 4;
-const digits = this.value.replace(/\D/g, "").slice(0, maxDigits);
-
-let result = "";
-let position = 0;
-
-for (const size of groups) {
-if (position >= digits.length) break;
-
-if (result) result += separator;
-
-result += digits.slice(position, position + size);
-position += size;
-}
-
-// Если введена короткая дата, например 201026
-
-this.value = result;
-});
-input.addEventListener("keydown", function (event) {
-if (event.key !== "Enter" && event.key !== " ") return;
-if (id !== "taskDate" && id !== "modalDate") return;
-
-const digits = input.value.replace(/\D/g, "");
-
-if (digits.length === 6) {
-event.preventDefault();
-input.value = digits.slice(0, 2) + "." +
-digits.slice(2, 4) + ".20" +
-digits.slice(4, 6);
-}
-});
-}
-
-function completeDate(id) {
-const input = document.getElementById(id);
-
-input.addEventListener("blur", function () {
-const match = this.value.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
-
-if (match) {
-this.value = match[1] + "." + match[2] + ".20" + match[3];
-}
-});
-}
-document.addEventListener("DOMContentLoaded", function () {
-formatInput("taskDate", [2, 2, 4], ".");
-formatInput("taskTime", [2, 2], ":");
-formatInput("modalDate", [2, 2, 4], ".");
-formatInput("modalTime", [2, 2], ":");
-completeDate("taskDate");
-completeDate("modalDate");
-});
-</script>
-<button onclick="editingTask=null; document.getElementById('modalTask').value=''; document.getElementById('modalDate').value=''; document.getElementById('modalTime').value=''; document.getElementById('taskModal').style.display='flex'">Добавить</button>
+ <input id="task" placeholder="Напиши задачу">
+ <button type="button" id="addButton">Добавить</button>
 </div>
 <div class="tabs">
-<button onclick="showTab('active')">Активные</button>
-<button onclick="showTab('done')">Выполненные</button>
+ <button type="button" id="activeTab">Активные</button>
+ <button type="button" id="doneTab">Выполненные</button>
 </div>
 <ul id="list"></ul>
 </div>
-
 <script>
-const storageKey = "my-secretary-tasks";
-let tasks = JSON.parse(localStorage.getItem(storageKey) || "[]");
-
-function save() {
-localStorage.setItem(storageKey, JSON.stringify(tasks));
+'use strict';
+const storageKey = 'my-secretary-tasks';
+let tasks;
+try { const stored = JSON.parse(localStorage.getItem(storageKey) || '[]'); tasks = Array.isArray(stored) ? stored : []; }
+catch { tasks = []; }
+let currentTab = 'active';
+let editingTask = null;
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+function save() { localStorage.setItem(storageKey, JSON.stringify(tasks)); }
+function dateText(d) { return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`; }
+function timeText(d) { return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function isDateOnly(task) { return !!task.dateOnly; }
+function isOverdue(task) {
+ if (!task.date || task.done) return false;
+ const d = new Date(task.date);
+ if (isNaN(d.getTime())) return false;
+ if (isDateOnly(task)) d.setHours(23,59,59,999);
+ return d < new Date();
 }
-
-let currentTab = "active";
-
 function showTab(tab) {
-currentTab = tab;
-
-document.querySelectorAll(".tabs button").forEach((button, index) => {
-button.classList.toggle("selected",
-(index === 0 && tab === "active") ||
-(index === 1 && tab === "done")
-);
-});
-
-render();
+ currentTab = tab;
+ $('activeTab').classList.toggle('selected', tab === 'active');
+ $('doneTab').classList.toggle('selected', tab === 'done');
+ render();
 }
 function render() {
-const list = document.getElementById("list");
-list.innerHTML = "";
-tasks.sort((a, b) => {
-const dateA = a.date ? new Date(a.date).getTime() : Infinity;
-const dateB = b.date ? new Date(b.date).getTime() : Infinity;
-return dateA - dateB;
-});
-
-tasks.forEach((task, index) => {
-if (currentTab === "active" && task.done) return;
-if (currentTab === "done" && !task.done) return;  
-const li = document.createElement("li");
-if (task.done) li.classList.add("done");
-if (task.rescheduled && !task.done && (!task.date || new Date(task.date) >= new Date())) li.classList.add("rescheduled");
-if (task.date && !task.done && new Date(task.date) < new Date()) {
-li.classList.add("overdue");
+ const list = $('list');
+ list.replaceChildren();
+ tasks.sort((a,b) => (a.date ? new Date(a.date).getTime() : Infinity) - (b.date ? new Date(b.date).getTime() : Infinity));
+ tasks.forEach(task => {
+  if (currentTab === 'active' && task.done) return;
+  if (currentTab === 'done' && !task.done) return;
+  const li = document.createElement('li');
+  if (task.done) li.classList.add('done');
+  if (isOverdue(task)) li.classList.add('overdue');
+  else if (task.rescheduled && !task.done) li.classList.add('rescheduled');
+  const label = document.createElement('span');
+  label.textContent = task.text;
+  if (task.date) {
+   const d = new Date(task.date);
+   if (!isNaN(d.getTime())) {
+    label.textContent += ' — ' + d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+    if (!isDateOnly(task)) label.textContent += ' в ' + timeText(d);
+   }
+  }
+  label.style.cursor = 'pointer';
+  label.tabIndex = 0;
+  label.setAttribute('role','button');
+  const buttons = document.createElement('div');
+  buttons.style.display = 'none';
+  buttons.style.flexDirection = 'column';
+  buttons.style.gap = '4px';
+  const edit = document.createElement('button');
+  edit.textContent = 'Изменить';
+  edit.onclick = () => openEditModal(task);
+  const done = document.createElement('button');
+  done.textContent = task.done ? 'Вернуть' : 'Выполнено';
+  done.onclick = () => { task.done = !task.done; save(); render(); };
+  const remove = document.createElement('button');
+  remove.textContent = 'Удалить';
+  remove.onclick = () => { tasks.splice(tasks.indexOf(task),1); save(); render(); };
+  buttons.append(edit,done,remove);
+  label.onclick = e => { e.stopPropagation(); buttons.style.display = buttons.style.display === 'none' ? 'flex' : 'none'; };
+  label.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); label.click(); } };
+  li.append(label,buttons);
+  list.append(li);
+ });
 }
-
-const check = document.createElement("input");
-check.type = "checkbox";
-check.checked = task.done;
-check.onchange = () => {
-tasks[index].done = check.checked;
-save();
-render();
-};
-
-const text = document.createElement("span");
-text.textContent = task.text;
-if (task.date) {
-const formattedDate = new Date(task.date).toLocaleString("ru-RU", {
-day: "numeric",
-month: "long",
-year: "numeric",
-hour: "2-digit",
-minute: "2-digit"
-});
-text.textContent += " — " + formattedDate;
+// Возвращает дату и признак того, было ли время явно указано.
+function recognizeDate(text, now = new Date()) {
+ const lower = text.toLowerCase().replace(/ё/g,'е');
+ const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ const result = new Date(today);
+ let recognized = false;
+ const weekdayMatch = lower.match(/(?:^|\s)(?:в[о]?\s+)?(воскресен(?:ье|ья|ью|ии|ие|ия|ию|ень)|понедельник[аеу]?|вторник[аеу]?|сред[ауеы]|четверг[аеу]?|пятниц[ауеы]|суббот[ауеы])(?=$|\s|[.,!?])/);
+ const weekdays = ['воскресен','понедельник','вторник','сред','четверг','пятниц','суббот'];
+ if (/послезавтра/.test(lower)) { result.setDate(result.getDate()+2); recognized=true; }
+ else if (/завтра/.test(lower)) { result.setDate(result.getDate()+1); recognized=true; }
+ else if (/сегодня/.test(lower)) { recognized=true; }
+ else if (weekdayMatch) {
+  const day = weekdays.findIndex(w => weekdayMatch[1].startsWith(w));
+  if (day !== -1) {
+   recognized=true;
+   if (/следующ(?:ей|ую)\s+недел[еию]/.test(lower)) {
+    const mondayOffset = (8 - now.getDay()) % 7 || 7;
+    result.setDate(result.getDate()+mondayOffset+((day+6)%7));
+   } else {
+    result.setDate(result.getDate()+(day-now.getDay()+7)%7);
+   }
+  }
+ }
+ const units={ноль:0,один:1,одна:1,два:2,две:2,три:3,четыре:4,пять:5,шесть:6,семь:7,восемь:8,девять:9};
+ const teens={десять:10,одиннадцать:11,двенадцать:12,тринадцать:13,четырнадцать:14,пятнадцать:15,шестнадцать:16,семнадцать:17,восемнадцать:18,девятнадцать:19};
+ const tens={двадцать:20,тридцать:30,сорок:40,пятьдесят:50};
+ const numberWords={...units,...teens,...tens};
+ const wordPattern=Object.keys(numberWords).sort((a,b)=>b.length-a.length).join('|');
+ const numPattern=`(?:\\d{1,2}|${wordPattern})`;
+ function toNumber(phrase) {
+  if (/^\d+$/.test(phrase)) return Number(phrase);
+  const parts=phrase.split(/\s+/);
+  if(parts.length===1) return numberWords[parts[0]];
+  if(parts.length===2 && tens[parts[0]]!==undefined && units[parts[1]]!==undefined) return tens[parts[0]]+units[parts[1]];
+  return undefined;
+ }
+ function applyPeriod(h,p) {
+  if (/^(дня|днем|вечера|вечером)$/.test(p) && h>=1 && h<=11) return h+12;
+  if (/^(утра|утром|ночи|ночью)$/.test(p) && h===12) return 0;
+  return h;
+ }
+ let hours=null,minutes=0;
+ const period='(?:утра|утром|дня|днем|вечера|вечером|ночи|ночью)';
+ // Сначала ищем числовое время: 7ч, 7 часов, 7 15, 7:15, 14 05.
+ const numericTime = /(?:^|\s)(?:в\s+)?(\d{1,2})(?:\s*(?:ч\.?|час(?:а|ов)?)(?:\.)?)?(?:\s*:\s*([0-5]\d)|\s+([0-5]?\d)(?!\s*(?:ч\b|час)))?(?:\s+(утра|утром|дня|днем|вечера|вечером|ночи|ночью))?(?=$|\s|[.,!?])/g;
+ for (const match of lower.matchAll(numericTime)) {
+  const hour=Number(match[1]);
+  if(hour>23) continue;
+  const hasClockMarker=/(?:ч\.?|час(?:а|ов)?\.?)/.test(match[0]);
+  const hasMinute=match[2]!==undefined || match[3]!==undefined;
+  const part=match[4]||'';
+  const hasPreposition=/(?:^|\s)в\s+/.test(match[0]);
+  if (!hasClockMarker && !hasMinute && !part) continue;
+  if (!hasPreposition && !hasClockMarker && !hasMinute) continue;
+  hours=applyPeriod(hour,part);
+  minutes=Number(match[2]??match[3]??0);
+  break;
+ }
+ if(hours===null) {
+  const tails=[...lower.matchAll(/(?:^|\s)в\s+([^.,!?]+)/g)];
+  for(const tail of tails) {
+   const tokens=tail[1].trim().split(/\s+/);
+   const periods=['утра','утром','дня','днем','вечера','вечером','ночи','ночью'];
+   const first=toNumber(tokens[0]);
+   if(Number.isInteger(first) && first>=0 && first<=23) {
+    let cursor=1, minute=0, hasCue=false;
+    if(/^час(?:а|ов)?$/.test(tokens[cursor]||'')) {cursor++;hasCue=true;}
+    const second=tokens[cursor];
+    if(second && numberWords[second]!==undefined) {
+     let number=second;
+     if(tens[second]!==undefined && units[tokens[cursor+1]]!==undefined) {number+=' '+tokens[cursor+1];cursor++;}
+     const n=toNumber(number);
+     if(Number.isInteger(n) && n>=0 && n<=59) {minute=n;cursor++;hasCue=true;}
+    }
+    if(/^минут(?:а|ы)?$/.test(tokens[cursor]||'')) {cursor++;hasCue=true;}
+    const p=periods.includes(tokens[cursor])?tokens[cursor]:'';
+    if(p||hasCue) {hours=applyPeriod(first,p);minutes=minute;break;}
+   }
+  }
+ }
+ const hasTime = hours !== null;
+ if (hasTime) result.setHours(hours,minutes,0,0);
+ if (!recognized && !hasTime) return null;
+ // При указании только времени выбираем ближайшее наступление.
+ if (!recognized && hasTime && result < now) result.setDate(result.getDate()+1);
+ // День недели без времени означает текущий день, если он совпал.
+ if (weekdayMatch && !/следующ(?:ей|ую)\s+недел[еию]/.test(lower) && hasTime && result < now) result.setDate(result.getDate()+7);
+ return {date:result,hasTime};
 }
-
-const remove = document.createElement("button");
-remove.textContent = "Удалить";
-remove.onclick = () => {
-tasks.splice(index, 1);
-save();
-render();
-};
-const edit = document.createElement("button");
-edit.textContent = "Изменить";
-edit.onclick = () => {
-editingTask = task;   
-document.getElementById("modalTask").value = task.text;
-
-const date = task.date ? new Date(task.date) : null;
-
-document.getElementById("modalDate").value = date
-? String(date.getDate()).padStart(2, "0") + "." +
-String(date.getMonth() + 1).padStart(2, "0") + "." +
-date.getFullYear()
-: "";
-
-document.getElementById("modalTime").value = date
-? String(date.getHours()).padStart(2, "0") + ":" +
-String(date.getMinutes()).padStart(2, "0")
-: "";
-
-document.getElementById("taskModal").style.display = "flex";
-};
-li.append(check, text, edit, remove);
-list.appendChild(li);
-});
+function openNewModal() {
+ editingTask = null;
+ $('modalHeading').textContent = 'Новая задача';
+ const text = $('task').value.trim();
+ $('modalTask').value = text;
+ const recognized = recognizeDate(text);
+ $('modalDate').value = recognized ? dateText(recognized.date) : '';
+ $('modalTime').value = recognized && recognized.hasTime ? timeText(recognized.date) : '';
+ $('taskModal').style.display = 'flex';
+ $('modalTask').focus();
 }
-
-
-function recognizeDate(text) {
-const today = new Date();
-const date = new Date(today);
-const lower = text.toLowerCase();
-
-if (lower.includes("послезавтра")) {
-date.setDate(date.getDate() + 2);
-} else if (lower.includes("завтра")) {
-date.setDate(date.getDate() + 1);
-} else if (!lower.includes("сегодня")) {
-return null;
+function openEditModal(task) {
+ editingTask = task;
+ $('modalHeading').textContent = 'Изменить задачу';
+ $('modalTask').value = task.text;
+ const d = task.date ? new Date(task.date) : null;
+ $('modalDate').value = d && !isNaN(d.getTime()) ? dateText(d) : '';
+ $('modalTime').value = d && !isNaN(d.getTime()) && !isDateOnly(task) ? timeText(d) : '';
+ $('taskModal').style.display = 'flex';
+ $('modalTask').focus();
 }
-
-const time = lower.match(/(?:в\s+)?([01]?\d|2[0-3]):([0-5]\d)/);
-if (time) {
-date.setHours(Number(time[1]), Number(time[2]), 0, 0);
-} else {
-date.setHours(0, 0, 0, 0);
+function closeModal() { $('taskModal').style.display='none'; editingTask=null; }
+function parseDateTime(dateValue,timeValue) {
+ const rawDate=dateValue.trim();
+ const rawTime=timeValue.trim();
+ if (!rawDate && !rawTime) return {valid:true,date:null,dateOnly:false};
+ if (!rawDate) return {valid:false,error:'Укажи дату или очисти поле времени'};
+ const dm=rawDate.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+ if (!dm) return {valid:false,error:'Введи дату полностью: ДД.ММ.ГГГГ'};
+ const tm=rawTime ? rawTime.match(/^([01]\d|2[0-3]):([0-5]\d)$/) : null;
+ if (rawTime && !tm) return {valid:false,error:'Введи время полностью: ЧЧ:ММ'};
+ const day=Number(dm[1]),month=Number(dm[2]),year=Number(dm[3]);
+ const hours=tm ? Number(tm[1]) : 0;
+ const minutes=tm ? Number(tm[2]) : 0;
+ const date=new Date(year,month-1,day,hours,minutes);
+ if (date.getFullYear()!==year || date.getMonth()!==month-1 || date.getDate()!==day) return {valid:false,error:'Проверь правильность даты'};
+ return {valid:true,date:date.toISOString(),dateOnly:!tm};
 }
-
-return date.toISOString();
-}
-function addTask() {
-const input = document.getElementById("task");
-const text = input.value.trim();
-if (!text) return;
-const dateInput = document.getElementById("taskDate");
-const timeInput = document.getElementById("taskTime");
-
-let taskDate = recognizeDate(text);
-
-const dateText = dateInput.value.trim();
-const timeText = timeInput.value.trim();
-
-if (dateText || timeText) {
-if (!/^\d{2}\.\d{2}\.\d{4}$/.test(dateText) ||
-!/^\d{2}:\d{2}$/.test(timeText)) {
-alert("Заполни дату и время полностью");
-return;
-}
-
-const [day, month, year] = dateText.split(".").map(Number);
-const [hours, minutes] = timeText.split(":").map(Number);
-
-const date = new Date(year, month - 1, day, hours, minutes);
-
-if (date.getFullYear() !== year ||
-date.getMonth() !== month - 1 ||
-date.getDate() !== day ||
-date.getHours() !== hours ||
-date.getMinutes() !== minutes) {
-alert("Проверь правильность даты и времени");
-return;
-}
-
-taskDate = date.toISOString();
-}
-
-tasks.push({
-text: text,
-done: false,
-date: taskDate
-});
-input.value = "";
-dateInput.value = "";
-timeInput.value = "";
-save();
-render();
-}
-let editingTask = null;
 function saveModalTask() {
-document.getElementById("task").value =
-document.getElementById("modalTask").value;
-
-document.getElementById("taskDate").value =
-document.getElementById("modalDate").value;
-
-document.getElementById("taskTime").value =
-document.getElementById("modalTime").value;
-
-if (editingTask !== null) {
-editingTask.text = document.getElementById("modalTask").value.trim();
-const dateText = document.getElementById("modalDate").value.trim();
-const timeText = document.getElementById("modalTime").value.trim();
-
-if (dateText && timeText) {
-const parts = dateText.split(".");
-const day = Number(parts[0]);
-const month = Number(parts[1]);
-const year = Number(parts[2]);
-
-const newDate = new Date(
-year, month - 1, day,
-Number(timeText.split(":")[0]),
-Number(timeText.split(":")[1])
-);
-
-if (isNaN(newDate.getTime()) ||
-newDate.getDate() !== day ||
-newDate.getMonth() !== month - 1 ||
-newDate.getFullYear() !== year) {
-alert("Неверная дата или время");
-return;
+ const text=$('modalTask').value.trim();
+ if (!text) { alert('Напиши задачу'); return; }
+ const parsed=parseDateTime($('modalDate').value,$('modalTime').value);
+ if (!parsed.valid) { alert(parsed.error); return; }
+ if (editingTask) {
+  const oldDate=editingTask.date;
+  if (oldDate && new Date(oldDate)<new Date() && parsed.date !== oldDate) editingTask.rescheduled=true;
+  editingTask.text=text;
+  editingTask.date=parsed.date;
+  editingTask.dateOnly=parsed.dateOnly;
+ } else {
+  tasks.push({text,done:false,date:parsed.date,dateOnly:parsed.dateOnly,rescheduled:false});
+  $('task').value='';
+ }
+ save(); render(); closeModal();
 }
-
-if (editingTask.date && new Date(editingTask.date) < new Date()) {
-editingTask.rescheduled = true;
+function formatInput(id,groups,separator) {
+ const input=$(id);
+ input.addEventListener('input',function() {
+  const digits=this.value.replace(/\D/g,'').slice(0,id==='modalDate'?8:4);
+  let result='',offset=0;
+  for (const size of groups) { if(offset>=digits.length)break; if(result)result+=separator; result+=digits.slice(offset,offset+size); offset+=size; }
+  this.value=result;
+ });
+ if(id==='modalDate') {
+  input.addEventListener('blur',function() {
+   const match=this.value.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+   if(match)this.value=`${match[1]}.${match[2]}.20${match[3]}`;
+  });
+  input.addEventListener('keydown',function(e) {
+   if(e.key!=='Enter'&&e.key!==' ')return;
+   const digits=this.value.replace(/\D/g,'');
+   if(digits.length===6) {e.preventDefault();this.value=`${digits.slice(0,2)}.${digits.slice(2,4)}.20${digits.slice(4,6)}`;}
+  });
+ }
 }
-
-editingTask.date = newDate.toISOString();
-}
-
-save();
-render();
-editingTask = null;
-} else {
-addTask();
-}
-
-document.getElementById("taskModal").style.display = "none";
-}
-document.getElementById("task").addEventListener("keydown", e => {
-if (e.key === "Enter") addTask();
-});
-
-showTab("active");
+formatInput('modalDate',[2,2,4],'.');
+formatInput('modalTime',[2,2],':');
+$('addButton').onclick=openNewModal;
+$('saveModalButton').onclick=saveModalTask;
+$('cancelModalButton').onclick=closeModal;
+$('activeTab').onclick=()=>showTab('active');
+$('doneTab').onclick=()=>showTab('done');
+$('task').addEventListener('keydown',e=>{if(e.key==='Enter')openNewModal();});
+$('taskModal').addEventListener('click',e=>{if(e.target===$('taskModal'))closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('taskModal').style.display==='flex')closeModal();});
+document.addEventListener('click',e=>{if(!e.target.closest('li'))document.querySelectorAll('#list li > div').forEach(el=>el.style.display='none');});
+showTab('active');
 </script>
 </body>
 </html>
